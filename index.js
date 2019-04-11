@@ -27,9 +27,8 @@ fi = (function() {
         acc = newCollection.shift()
       }
       for (let i = 0; i < newCollection.length; i++){
-
-          acc = callback(acc, newCollection[i], collection)
-        }
+        acc = callback(acc, newCollection[i], collection)
+      }
       return acc
     },
 
@@ -88,46 +87,34 @@ fi = (function() {
       for (let i = 0; i < array.length; i++){
         mapped.push(callback(array[i]))
       }
-        if (typeof mapped[0] === "string"){
-          sorted = mapped.sort()
-        }else{
-          sorted = mapped.sort(function(a,b){return a-b})
-        }
-      sortedArray = []
+      if (typeof mapped[0] === "string"){
+        sorted = mapped.sort()
+      }else{
+        sorted = mapped.sort(function(a,b){return a-b})
+      }
+      originalSort = []
       for (let j = 0; j < sorted.length; j++){
         for (let x = 0; x < array.length; x++){
           if (sorted[j] == callback(array[x])){
-            sortedArray.push(array[x])
-            sorted[j] = null
+            originalSort.push(array[x])
+            break
           }
         }
       }
-      return sortedArray
+      return originalSort
     },
 
     flatten: function(array, shallow){
       let newArray = []
-      if (shallow === true) {
-        for (let i = 0; i < array.length; i++){
-          if (typeof array[i] != "object") {
-            newArray.push(array[i])
-          } else {
-            for (let j=0; j < array[i].length; j++) {
-              newArray.push(array[i][j])
-            }
-          }
-        }
-      }else{
+      let currentArray = fi.flattenOnce(array)
+      if (shallow !== true) {
         let lastTimesArray = array
-        let testArray = fi.flattenOnce(lastTimesArray)
-
-        while (lastTimesArray.join("") != testArray.join("")) {
+        while (lastTimesArray.join("") != currentArray.join("")) {
           lastTimesArray = fi.flattenOnce(lastTimesArray)
-          testArray = fi.flattenOnce(testArray)
+          currentArray = fi.flattenOnce(currentArray)
         }
-        return lastTimesArray
       }
-      return newArray
+      return currentArray
     },
 
     flattenOnce: function(array) {
@@ -147,7 +134,6 @@ fi = (function() {
     uniq: function(array, isSorted, callback) {
       const uniqArray = []
       const checkArray = []
-      console.log(callback)
       for (let i=0; i < array.length; i++) {
         if (callback === undefined) {
           if (!uniqArray.includes(array[i])) {
@@ -188,6 +174,3 @@ fi = (function() {
     }
   }
 })()
-
-fi.libraryMethod()
-fi.each()
